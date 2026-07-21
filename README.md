@@ -1,46 +1,111 @@
 # Seed Split Tool
 
-Privacy-first browser utility for splitting seed phrases, passwords, and recovery secrets with Shamir's Secret Sharing.
+Privacy-first browser application for generating, splitting, and recovering seed phrases and other secrets locally.
 
-## Current status
-
-Version 0.2 adds a single scheme selector:
-
-- **SLIP-39**: visible but disabled until the adapter passes official SLIP-0039 test vectors.
-- **Banana Split**: visible but disabled until compatibility with `BananaSplit.html` is verified.
-- **Generic Secret Sharing**: active implementation using the application's own `SST1` container.
-
-`SST1` is not BIP39 or SLIP-39. Similar mathematics does not make formats compatible.
+The application works entirely in the browser. Seed phrases, passwords, shares, and recovered secrets are not sent to a server.
 
 ## Features
 
-- Fully local processing with Web Crypto randomness
-- Configurable K-of-N schemes
-- Integrity checksum and set identifiers
-- Duplicate and mixed-set detection
+- BIP-39 seed phrase generator
+- Official BIP-39 wordlists
+- Entropy fingerprint and Wallet fingerprint
+- Optional BIP-39 Passphrase
+- SLIP-39 split and recovery
+- Password-protected Banana Split mode
+- Generic Shamir Secret Sharing in the project-specific `SST1` format
+- Configurable K-of-N recovery schemes
 - Guided backup verification
 - Print and text export
-- Static GitHub Pages build
-- No accounts, analytics, cookies, or server
+- Smooth navigation between generation, splitting, and recovery
+- Static GitHub Pages deployment
+- No accounts, analytics, cookies, or backend
 
-## Start
+## Workflows
+
+The interface is divided into three tabs:
+
+1. **Generation** — create a new BIP-39 mnemonic locally.
+2. **Split seed** — split a mnemonic or another secret into K-of-N shares.
+3. **Recover** — combine the required shares and restore the original secret.
+
+Generated seed phrases remain available when moving to the split workflow. Created shares can also be passed directly to the recovery workflow for verification.
+
+## Supported schemes
+
+### SLIP-39
+
+Creates mnemonic shares from the entropy of a valid BIP-39 phrase. Any configured threshold subset can recover the entropy and recreate a BIP-39 mnemonic in the selected language.
+
+Use independent compatible software or hardware to verify important backups before storing significant funds.
+
+### Banana Split
+
+Encrypts the secret with a required password and then splits the encrypted payload into K-of-N shares.
+
+Recovery requires both:
+
+- the configured number of shares;
+- the correct password.
+
+This implementation does not claim compatibility with unrelated tools named `BananaSplit.html`.
+
+### Generic SST1
+
+Splits arbitrary text using Shamir's Secret Sharing and stores each share in the project's versioned `SST1` container.
+
+`SST1` is not BIP-39 or SLIP-39 and requires this project or another implementation of the same format for recovery.
+
+## Local development
+
+Requirements:
+
+- Node.js 22 recommended
+- npm
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open `http://localhost:3200`.
+Open:
 
-## Validate
+```text
+http://localhost:3200
+```
+
+## Validation
+
+Run the complete verification pipeline:
 
 ```bash
 npm run check
 ```
 
-## Security
+It includes:
 
-Use the downloaded static build on a trusted, preferably offline computer. JavaScript cannot guarantee complete removal of secrets from device memory. Do not store all shares together, photograph the entire set, or use an untrusted printer.
+- cryptographic round-trip smoke tests;
+- TypeScript checks;
+- ESLint;
+- production build.
+
+## Security notes
+
+- Use the downloaded static build on a trusted, preferably offline computer.
+- Never store all shares in the same place.
+- Store BIP-39, SLIP-39, and Banana passwords separately from the shares.
+- Verify recovery before relying on a backup.
+- Clipboard history, browser extensions, screen capture tools, and printers may expose sensitive data.
+- JavaScript cannot guarantee immediate removal of secrets from device memory.
+
+See [`docs/AUDIT.md`](docs/AUDIT.md) for the current risk assessment.
+
+## Project status
+
+Current release: **v0.4.0**
+
+The project is suitable for development, testing, and carefully controlled use. A broader architecture, dependency, UX, and security revision is planned before version 1.0.
+
+See [`ROADMAP.md`](ROADMAP.md) and [`CHANGELOG.md`](CHANGELOG.md).
 
 ## License
 
