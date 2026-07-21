@@ -1,7 +1,6 @@
 import * as base64 from "base64-js";
 import { Buffer } from "buffer";
 import scrypt from "scryptsy";
-import secrets from "secrets.js-grempe";
 import nacl from "tweetnacl";
 
 type BananaPayload = { v?: number; t: string; r: number; d: string; n: string };
@@ -25,8 +24,9 @@ function deriveKey(passphrase: string, salt: Uint8Array): Uint8Array {
   return new Uint8Array(scrypt(passphrase, Buffer.from(salt), 1 << 15, 8, 1, 32));
 }
 
-export function splitBanana(secret: string, title: string, passphrase: string, total: number, threshold: number): string[] {
+export async function splitBanana(secret: string, title: string, passphrase: string, total: number, threshold: number): Promise<string[]> {
   if (!passphrase) throw new Error("Для Banana Split нужен пароль");
+  const { default: secrets } = await import("secrets.js-grempe");
   const salt = hashTitle(title);
   const nonce = nacl.randomBytes(24);
   const encrypted = nacl.secretbox(new TextEncoder().encode(secret), nonce, deriveKey(passphrase, salt));
@@ -37,8 +37,9 @@ export function splitBanana(secret: string, title: string, passphrase: string, t
   });
 }
 
-export function recoverBanana(parts: string[], passphrase: string): string {
+export async function recoverBanana(parts: string[], passphrase: string): Promise<string> {
   if (!passphrase) throw new Error("Введите пароль Banana Split");
+  const { default: secrets } = await import("secrets.js-grempe");
   const payloads = parts.map((part) => JSON.parse(part) as BananaPayload);
   const first = payloads[0];
   if (!first) throw new Error("Добавьте части Banana Split");

@@ -50,7 +50,7 @@ export function SeedSplitApp() {
     try {
       let next: string[];
       if (scheme === "slip39") next = splitSlip39(secret, total, threshold, passphrase);
-      else if (scheme === "banana") next = splitBanana(secret, bananaTitle.trim() || "Seed Split Tool", passphrase, total, threshold);
+      else if (scheme === "banana") next = await splitBanana(secret, bananaTitle.trim() || "Seed Split Tool", passphrase, total, threshold);
       else next = await splitSecret(secret, total, threshold);
       setShares(next); setStatus("Части созданы только в памяти этого браузера");
     } catch (error) { setStatus(error instanceof Error ? error.message : String(error)); }
@@ -62,7 +62,7 @@ export function SeedSplitApp() {
     try {
       let result: string;
       if (scheme === "slip39") result = recoverSlip39(input, passphrase);
-      else if (scheme === "banana") result = recoverBanana(input, passphrase);
+      else if (scheme === "banana") result = await recoverBanana(input, passphrase);
       else result = await recoverSecret(input);
       setRecovered(result); setStatus("Секрет успешно восстановлен и проверен");
       if (shares.length && result.trim() === secret.trim()) setVerified(true);

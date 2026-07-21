@@ -11,3 +11,11 @@ declare module "slip39" {
 declare module "scryptsy" {
   export default function scrypt(password: string | Uint8Array, salt: Uint8Array, N: number, r: number, p: number, dkLen: number): Uint8Array;
 }
+
+declare module "secrets.js-grempe" {
+  const secrets: {
+    share(secret: string, total: number, threshold: number): string[];
+    combine(shares: string[]): string;
+  };
+  export default secrets;
+}

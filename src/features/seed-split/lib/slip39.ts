@@ -1,5 +1,5 @@
 import { entropyToMnemonic, mnemonicToEntropy, validateMnemonic } from "bip39";
-import slip39 = require("slip39");
+import slip39 from "slip39";
 
 export function splitSlip39(mnemonic: string, total: number, threshold: number, passphrase: string): string[] {
   const normalized = mnemonic.trim().toLowerCase().replace(/\s+/gu, " ");
