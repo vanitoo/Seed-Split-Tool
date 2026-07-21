@@ -2,6 +2,19 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.1 - 2026-07-22
+
+### Fixed
+
+- Fixed React `react-hooks/refs` lint failures introduced by the 0.5.0 component refactor.
+- Destructured component props so regular values and callbacks are no longer incorrectly treated as ref access during render.
+- Kept refs attached only to their intended DOM elements.
+
+### Changed
+
+- Reformatted workflow and share-result components into clearer multi-line JSX.
+- Updated the displayed and package version to 0.5.1.
+
 ## 0.5.0 - 2026-07-22
 
 ### Changed
@@ -63,6 +76,6 @@ All notable project changes are documented in this file.
 
 - Replaced the browser-tool demo with Seed Split Tool.
 - Added local Shamir K-of-N splitting over GF(256).
-- Added the versioned SST1 share envelope with set ID and SHA-256 checksum.
+- Added the versioned `SST1` share envelope with set ID and SHA-256 checksum.
 - Added recovery, duplicate handling, mixed-set validation, backup verification, printing, and text downloads.
 - Added a responsive privacy-first interface.
