@@ -1,23 +1,24 @@
 # Version
 
-Current release: **v0.5.1**
+Current release: **v0.5.2**
 
 Release date: **2026-07-22**
 
 ## Release summary
 
-Version 0.5.1 is a corrective release for the architecture refactor introduced in 0.5.0.
+Version 0.5.2 improves the information architecture of the split and recovery workflows.
 
 The release includes:
 
-- destructured props in workflow and share-result components;
-- compatibility with the React refs ESLint rule used by Next.js 16;
-- restored clean lint validation after the component split;
-- unchanged cryptographic behavior and user workflows;
-- continued exclusion of local TypeScript build caches from Git.
+- explicit scheme characteristics instead of a misleading star-based strength score;
+- algorithm, compatibility, and password requirements for every supported format;
+- a full-width two-column recovery workspace;
+- contextual recovery instructions for SLIP-39, Banana Split, and Generic SST1;
+- live display of the number of recognized recovery parts;
+- unchanged cryptographic behavior.
 
 ## Stability
 
 This is a pre-1.0 release intended for development, testing, and carefully controlled use.
 
-The architecture is easier to test and extend, but browser end-to-end tests, dependency pinning, accessibility review, and the final security review are still required before version 1.0.
+Browser end-to-end tests, dependency pinning, accessibility review, and the final security review are still required before version 1.0.
