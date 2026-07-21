@@ -2,6 +2,21 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.0 - 2026-07-22
+
+### Changed
+
+- Split the large SeedSplitApp component into dedicated generation, split, recovery, scheme-selection, and share-results components.
+- Moved workflow types and scheme metadata into a dedicated domain model.
+- Moved browser-only helpers for downloads, parsing, scrolling, word counting, and status classification out of the main component.
+- Kept cryptographic adapters and user-visible behavior unchanged during the refactor.
+- Updated the displayed application version to 0.5.0.
+
+### Maintenance
+
+- Added `*.tsbuildinfo` to `.gitignore` so local TypeScript build caches are not proposed for commits.
+- Removed confirmed dead starter-template code before the architecture split.
+
 ## 0.4.0 - 2026-07-22
 
 ### Added

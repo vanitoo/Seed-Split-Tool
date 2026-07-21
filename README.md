@@ -30,13 +30,17 @@ The interface is divided into three tabs:
 
 Generated seed phrases remain available when moving to the split workflow. Created shares can also be passed directly to the recovery workflow for verification.
 
+## Architecture
+
+The application container coordinates shared workflow state and cryptographic operations. Generation, splitting, recovery, scheme selection, and share results are implemented as separate presentation components. Scheme metadata and browser helpers are isolated from the main React component.
+
+Cryptographic adapters live under `src/features/seed-split/lib` and are kept separate from the interface.
+
 ## Supported schemes
 
 ### SLIP-39
 
 Creates mnemonic shares from the entropy of a valid BIP-39 phrase. Any configured threshold subset can recover the entropy and recreate a BIP-39 mnemonic in the selected language.
-
-The automated test suite includes official SLIP-0039 vectors published by Trezor/SatoshiLabs. It checks valid 128-bit and 256-bit recovery, grouped recovery, and rejection of malformed or insufficient share sets.
 
 Use independent compatible software or hardware to verify important backups before storing significant funds.
 
@@ -110,11 +114,11 @@ See [`docs/AUDIT.md`](docs/AUDIT.md) for the current risk assessment.
 
 ## Project status
 
-Current release: **v0.4.0**
+Current release: **v0.5.0**
 
-The project is suitable for development, testing, and carefully controlled use. A broader architecture, dependency, UX, and security revision is planned before version 1.0.
+The architecture revision is complete. Dependency pinning, browser end-to-end tests, accessibility, offline recovery verification, and final security review remain planned before version 1.0.
 
-See [`ROADMAP.md`](ROADMAP.md) and [`CHANGELOG.md`](CHANGELOG.md).
+See [`ROADMAP.md`](ROADMAP.md), [`VERSION.md`](VERSION.md), and [`CHANGELOG.md`](CHANGELOG.md).
 
 ## License
 

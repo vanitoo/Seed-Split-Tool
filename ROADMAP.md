@@ -44,10 +44,11 @@
 - [x] TypeScript, ESLint, and production-build checks
 - [x] Initial security audit
 - [x] Remove confirmed dead template code
+- [x] Review application architecture and component boundaries
+- [x] Split the main application into workflow components
 
 ## Next stage: project revision
 
-- [ ] Review application architecture and component boundaries
 - [ ] Normalize naming
 - [ ] Consolidate CSS and design tokens
 - [ ] Review dependencies and pin cryptographic packages where appropriate
