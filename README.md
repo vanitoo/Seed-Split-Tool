@@ -4,12 +4,18 @@ Privacy-first browser utility for splitting seed phrases, passwords, and recover
 
 ## Current status
 
-Version 0.1 implements the local `SST1` format. It is **not** BIP39 or SLIP-39 compatible. Keep a copy of this application with your shares. SLIP-39 import/export is planned as a separate standards adapter.
+Version 0.2 adds a single scheme selector:
+
+- **SLIP-39**: visible but disabled until the adapter passes official SLIP-0039 test vectors.
+- **Banana Split**: visible but disabled until compatibility with `BananaSplit.html` is verified.
+- **Generic Secret Sharing**: active implementation using the application's own `SST1` container.
+
+`SST1` is not BIP39 or SLIP-39. Similar mathematics does not make formats compatible.
 
 ## Features
 
 - Fully local processing with Web Crypto randomness
-- Configurable K-of-N schemes (2–16 shares)
+- Configurable K-of-N schemes
 - Integrity checksum and set identifiers
 - Duplicate and mixed-set detection
 - Guided backup verification
@@ -24,7 +30,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3200`.
 
 ## Validate
 
