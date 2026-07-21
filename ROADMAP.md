@@ -40,6 +40,7 @@
 
 - [x] Static GitHub Pages deployment
 - [x] Cryptographic round-trip smoke tests
+- [x] Official SLIP-39 compatibility vectors
 - [x] TypeScript, ESLint, and production-build checks
 - [x] Initial security audit
 
@@ -49,7 +50,7 @@
 - [ ] Remove dead code and normalize naming
 - [ ] Consolidate CSS and design tokens
 - [ ] Review dependencies and pin cryptographic packages where appropriate
-- [ ] Add independent SLIP-39 compatibility vectors
+- [x] Add independent SLIP-39 compatibility vectors
 - [ ] Add browser end-to-end tests
 - [ ] Review mobile layout and accessibility
 - [ ] Run Lighthouse and performance checks

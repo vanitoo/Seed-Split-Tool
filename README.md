@@ -36,6 +36,8 @@ Generated seed phrases remain available when moving to the split workflow. Creat
 
 Creates mnemonic shares from the entropy of a valid BIP-39 phrase. Any configured threshold subset can recover the entropy and recreate a BIP-39 mnemonic in the selected language.
 
+The automated test suite includes official SLIP-0039 vectors published by Trezor/SatoshiLabs. It checks valid 128-bit and 256-bit recovery, grouped recovery, and rejection of malformed or insufficient share sets.
+
 Use independent compatible software or hardware to verify important backups before storing significant funds.
 
 ### Banana Split
@@ -81,9 +83,16 @@ Run the complete verification pipeline:
 npm run check
 ```
 
-It includes:
+Run only the official SLIP-39 compatibility vectors:
+
+```bash
+npm run test:slip39-vectors
+```
+
+The complete pipeline includes:
 
 - cryptographic round-trip smoke tests;
+- official SLIP-39 compatibility vectors;
 - TypeScript checks;
 - ESLint;
 - production build.
