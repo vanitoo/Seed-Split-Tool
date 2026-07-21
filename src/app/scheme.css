@@ -29,9 +29,7 @@
   width: min(100%, 620px);
 }
 
-.main-tabs button {
-  white-space: nowrap;
-}
+.main-tabs button { white-space: nowrap; }
 
 .seed-generator {
   margin-bottom: 1.6rem;
@@ -41,9 +39,7 @@
   background: linear-gradient(180deg, rgba(20, 56, 44, 0.65), rgba(7, 21, 16, 0.7));
 }
 
-.standalone-generator {
-  margin-bottom: 1.8rem;
-}
+.standalone-generator { margin-bottom: 1.8rem; }
 
 .generator-controls {
   display: grid;
@@ -141,7 +137,7 @@
 .bip39-passphrase input:focus,
 .compat-fields input:focus {
   border-color: #b2ffda;
-  box-shadow: 0 0 0 4px rgba(108, 243,177,.18);
+  box-shadow: 0 0 0 4px rgba(108,243,177,.18);
 }
 
 .generation-actions {
@@ -169,6 +165,153 @@
   color: #052117;
 }
 
+.label-with-help {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 !important;
+}
+
+.help-tip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.8rem;
+  cursor: help;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.help-bubble {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: min(280px, 80vw);
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #477466;
+  border-radius: 12px;
+  background: #07120f;
+  color: var(--text) !important;
+  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  font-size: 0.82rem !important;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 4px);
+  transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+}
+
+.help-tip:hover .help-bubble,
+.help-tip:focus .help-bubble,
+.help-tip:focus-visible .help-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.algorithm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: stretch;
+}
+
+.algorithm-symbol {
+  color: var(--accent);
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.algorithm-panel h3 { margin: 0; font-size: 1.5rem; }
+
+.check-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.check-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.check-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.algorithm-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.algorithm-metrics > div,
+.strength {
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #071510;
+}
+
+.algorithm-metrics span,
+.strength span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.algorithm-metrics strong { color: var(--accent); font-size: 1.9rem; }
+.strength strong { color: var(--accent); letter-spacing: 0.12em; }
+
+.flow-diagram {
+  display: grid;
+  place-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding: 1rem;
+  border: 1px dashed #477466;
+  border-radius: 14px;
+  background: rgba(7,21,16,.55);
+}
+
+.flow-diagram span {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #10251e;
+  color: var(--text);
+  text-align: center;
+  font-weight: 800;
+}
+
+.flow-diagram b { color: var(--accent); }
+
+.results,
+.recovery-panel,
+.result-secret { scroll-margin-top: 24px; }
+
 @media (max-width: 850px) {
   .generator-controls { grid-template-columns: 1fr 1fr; }
   .generator-controls button { grid-column: 1 / -1; }
@@ -184,4 +327,9 @@
   .main-tabs button { padding-inline: 0.65rem; font-size: 0.85rem; white-space: normal; }
   .generation-actions { justify-content: stretch; }
   .generation-actions button { flex: 1 1 100%; }
+  .algorithm-metrics { grid-template-columns: 1fr; }
+  .help-bubble { left: 0; transform: translate(0, 4px); }
+  .help-tip:hover .help-bubble,
+  .help-tip:focus .help-bubble,
+  .help-tip:focus-visible .help-bubble { transform: translate(0, 0); }
 }
