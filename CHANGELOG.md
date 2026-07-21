@@ -2,6 +2,16 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.2 - 2026-07-22
+
+### Changed
+
+- Replaced the static star-based strength indicator with explicit scheme characteristics.
+- Added algorithm, compatibility, and password requirements for SLIP-39, Banana Split, and Generic SST1.
+- Restored the two-column layout on the recovery tab.
+- Added format-specific recovery guidance and a live recognized-parts counter.
+- Updated the displayed and package version to 0.5.2.
+
 ## 0.5.1 - 2026-07-22
 
 ### Fixed
