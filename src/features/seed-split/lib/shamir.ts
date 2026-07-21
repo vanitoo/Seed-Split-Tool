@@ -10,6 +10,7 @@ export type ShareEnvelope = {
 
 const EXP = new Uint8Array(512);
 const LOG = new Uint8Array(256);
+const MAX_SHARES = 16;
 let tablesReady = false;
 
 function initTables(): void {
@@ -51,10 +52,15 @@ function bytesToBase64Url(bytes: Uint8Array): string {
 }
 
 function base64UrlToBytes(value: string): Uint8Array {
+  if (!value || !/^[A-Za-z0-9_-]+$/u.test(value)) throw new Error("Повреждённые данные части");
   const base64 = value.replaceAll("-", "+").replaceAll("_", "/");
   const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-  const binary = atob(padded);
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  try {
+    const binary = atob(padded);
+    return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  } catch {
+    throw new Error("Повреждённые данные части");
+  }
 }
 
 function encodeEnvelope(envelope: ShareEnvelope): string {
@@ -62,21 +68,35 @@ function encodeEnvelope(envelope: ShareEnvelope): string {
   return `SST1-${bytesToBase64Url(new TextEncoder().encode(json))}`;
 }
 
+function assertEnvelope(value: Partial<ShareEnvelope>): asserts value is ShareEnvelope {
+  if (
+    value.v !== 1 ||
+    typeof value.id !== "string" || !/^[0-9A-F]{8}$/u.test(value.id) ||
+    !Number.isInteger(value.x) || (value.x ?? 0) < 1 || (value.x ?? 0) > MAX_SHARES ||
+    !Number.isInteger(value.threshold) || (value.threshold ?? 0) < 2 ||
+    !Number.isInteger(value.total) || (value.total ?? 0) < 2 || (value.total ?? 0) > MAX_SHARES ||
+    (value.threshold ?? 0) > (value.total ?? 0) || (value.x ?? 0) > (value.total ?? 0) ||
+    typeof value.checksum !== "string" || !/^[0-9A-F]{12}$/u.test(value.checksum) ||
+    typeof value.data !== "string" || value.data.length === 0
+  ) {
+    throw new Error("Повреждённый формат части");
+  }
+}
+
 export function decodeShare(value: string): ShareEnvelope {
   const normalized = value.trim();
   if (!normalized.startsWith("SST1-")) throw new Error("Это не часть Seed Split Tool v1");
-  const decoded = new TextDecoder().decode(base64UrlToBytes(normalized.slice(5)));
-  const valueObject = JSON.parse(decoded) as Partial<ShareEnvelope>;
-  if (
-    valueObject.v !== 1 ||
-    typeof valueObject.id !== "string" ||
-    typeof valueObject.x !== "number" ||
-    typeof valueObject.threshold !== "number" ||
-    typeof valueObject.total !== "number" ||
-    typeof valueObject.checksum !== "string" ||
-    typeof valueObject.data !== "string"
-  ) throw new Error("Повреждённый формат части");
-  return valueObject as ShareEnvelope;
+
+  try {
+    const decoded = new TextDecoder("utf-8", { fatal: true }).decode(base64UrlToBytes(normalized.slice(5)));
+    const valueObject = JSON.parse(decoded) as Partial<ShareEnvelope>;
+    assertEnvelope(valueObject);
+    base64UrlToBytes(valueObject.data);
+    return valueObject;
+  } catch (error) {
+    if (error instanceof Error && ["Это не часть Seed Split Tool v1", "Повреждённые данные части", "Повреждённый формат части"].includes(error.message)) throw error;
+    throw new Error("Повреждённый формат части");
+  }
 }
 
 async function checksum(bytes: Uint8Array): Promise<string> {
@@ -93,8 +113,9 @@ function setId(): string {
 
 export async function splitSecret(secret: string, total: number, threshold: number): Promise<string[]> {
   if (!secret) throw new Error("Введите секрет");
+  if (!Number.isInteger(total) || !Number.isInteger(threshold)) throw new Error("Количество частей должно быть целым числом");
   if (threshold < 2 || threshold > total) throw new Error("Порог должен быть от 2 до количества частей");
-  if (total > 16) throw new Error("Максимум 16 частей");
+  if (total > MAX_SHARES) throw new Error(`Максимум ${MAX_SHARES} частей`);
 
   const input = new TextEncoder().encode(secret.normalize("NFKD"));
   const id = setId();
@@ -129,19 +150,25 @@ export async function recoverSecret(rawShares: string[]): Promise<string> {
   const unique = new Map<number, ShareEnvelope>();
   for (const raw of rawShares.filter((item) => item.trim())) {
     const share = decodeShare(raw);
+    const existing = unique.get(share.x);
+    if (existing && JSON.stringify(existing) !== JSON.stringify(share)) {
+      throw new Error(`Обнаружены разные части с номером ${share.x}`);
+    }
     unique.set(share.x, share);
   }
+
   const shares = Array.from(unique.values());
   if (shares.length === 0) throw new Error("Добавьте части");
   const reference = shares[0];
   if (shares.some((share) => share.id !== reference.id)) throw new Error("Части относятся к разным наборам");
   if (shares.some((share) => share.threshold !== reference.threshold || share.total !== reference.total)) throw new Error("Параметры частей не совпадают");
+  if (shares.some((share) => share.checksum !== reference.checksum)) throw new Error("Контрольные суммы частей не совпадают");
   if (shares.length < reference.threshold) throw new Error(`Нужно ещё ${reference.threshold - shares.length} част.`);
 
   const selected = shares.slice(0, reference.threshold);
   const byteArrays = selected.map((share) => base64UrlToBytes(share.data));
   const length = byteArrays[0].length;
-  if (byteArrays.some((bytes) => bytes.length !== length)) throw new Error("Размеры частей не совпадают");
+  if (length === 0 || byteArrays.some((bytes) => bytes.length !== length)) throw new Error("Размеры частей не совпадают");
   const output = new Uint8Array(length);
 
   for (let byteIndex = 0; byteIndex < length; byteIndex += 1) {
