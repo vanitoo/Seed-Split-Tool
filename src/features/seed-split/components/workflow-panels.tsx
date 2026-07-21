@@ -53,40 +53,17 @@ export function GenerationWorkflow({
     <section className="workspace generator-workspace">
       <div className="panel input-panel">
         <section className="seed-generator standalone-generator">
-          <div className="section-title">
-            <span>01</span>
-            <div><h2>Генератор BIP-39</h2><p>Создаёт новую seed-фразу локально через Web Crypto</p></div>
-          </div>
+          <div className="section-title"><span>01</span><div><h2>Генератор BIP-39</h2><p>Создаёт новую seed-фразу локально через Web Crypto</p></div></div>
           <div className="generator-controls">
-            <label>
-              Количество слов
-              <select value={bip39Words} onChange={(event) => onWordsChange(Number(event.target.value) as Bip39WordCount)}>
-                {BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}
-              </select>
-            </label>
-            <label>
-              Официальный словарь
-              <select value={bip39Language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>
-                {BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}
-              </select>
-            </label>
+            <label>Количество слов<select value={bip39Words} onChange={(event) => onWordsChange(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
+            <label>Официальный словарь<select value={bip39Language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
             <button type="button" onClick={onGenerate}>Сгенерировать seed</button>
           </div>
-          <label className="bip39-passphrase">
-            <span className="label-with-help">BIP-39 Passphrase <span className="help-tip" tabIndex={0} aria-label="Подсказка о BIP-39 Passphrase">ⓘ<span className="help-bubble">Используется как дополнительный пароль.<br />Не входит в seed-фразу.<br />Потеря пароля лишает доступа к созданному кошельку.</span></span></span>
-            <input type="password" value={bip39Passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Храните отдельно" autoComplete="new-password" />
-          </label>
-          <div className="entropy-proof">
-            <div><span>Словарь</span><strong>{sourceLanguageLabel}</strong></div>
-            <div><span>Entropy</span><code>{compactFingerprint(entropy)}</code></div>
-            <div><span className="label-with-help">Wallet fingerprint <span className="help-tip" tabIndex={0}>ⓘ<span className="help-bubble">Короткий отпечаток производного wallet seed. Помогает увидеть изменение языка или Passphrase.</span></span></span><code>{walletFingerprint}</code></div>
-          </div>
+          <label className="bip39-passphrase"><span className="label-with-help">BIP-39 Passphrase <span className="help-tip" tabIndex={0} aria-label="Подсказка о BIP-39 Passphrase">ⓘ<span className="help-bubble">Используется как дополнительный пароль.<br />Не входит в seed-фразу.<br />Потеря пароля лишает доступа к созданному кошельку.</span></span></span><input type="password" value={bip39Passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Храните отдельно" autoComplete="new-password" /></label>
+          <div className="entropy-proof"><div><span>Словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{compactFingerprint(entropy)}</code></div><div><span className="label-with-help">Wallet fingerprint <span className="help-tip" tabIndex={0}>ⓘ<span className="help-bubble">Короткий отпечаток производного wallet seed. Помогает увидеть изменение языка или Passphrase.</span></span></span><code>{walletFingerprint}</code></div></div>
         </section>
         <div className="section-title"><span>02</span><div><h2>Созданная seed-фраза</h2><p>Проверьте язык, количество слов и сохраните фразу безопасным способом</p></div></div>
-        <div className="secret-wrap">
-          <textarea value={secret} onChange={(event) => onSecretChange(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" />
-          <button className="ghost" onClick={onToggleVisible}>{visible ? "Скрыть" : "Показать"}</button>
-        </div>
+        <div className="secret-wrap"><textarea value={secret} onChange={(event) => onSecretChange(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={onToggleVisible}>{visible ? "Скрыть" : "Показать"}</button></div>
         <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span><span>{entropy ? "BIP-39 корректна" : "Seed ещё не создана"}</span></div>
         {secret && <div className="generation-actions"><button onClick={onCopy}>Копировать</button><button onClick={onDownload}>Скачать</button><button className="primary-inline" onClick={onContinue}>Перейти к разделению →</button></div>}
       </div>
@@ -115,6 +92,19 @@ type SplitProps = {
   onThresholdChange: (value: number) => void;
   onCreate: () => void;
 };
+
+function SchemeCharacteristics({ info }: { info: SchemeInfo }) {
+  return (
+    <div className="scheme-characteristics">
+      <h4>Характеристики</h4>
+      <dl>
+        <div><dt>Алгоритм</dt><dd>{info.algorithm}</dd></div>
+        <div><dt>Совместимость</dt><dd>{info.compatibility}</dd></div>
+        <div><dt>Пароль</dt><dd>{info.password}</dd></div>
+      </dl>
+    </div>
+  );
+}
 
 export function SplitWorkflow({
   scheme,
@@ -148,7 +138,13 @@ export function SplitWorkflow({
         <div className="preset-row">{[[2, 3], [3, 5], [4, 7]].map(([required, count]) => <button key={`${required}-${count}`} onClick={() => { onThresholdChange(required); onTotalChange(count); }}>{required} из {count}</button>)}</div>
         <button className="primary" disabled={busy || !secret.trim() || (scheme === "slip39" && !entropy) || (scheme === "banana" && !passphrase)} onClick={onCreate}>{busy ? "Обработка…" : `Создать ${total} частей`}</button>
       </div>
-      <aside className="panel algorithm-panel"><div className="algorithm-symbol">◇</div><h3>{schemeInfo.shortLabel}</h3><ul className="check-list">{schemeInfo.details.map((item) => <li key={item}>{item}</li>)}</ul><div className="algorithm-metrics"><div><span>Нужно частей</span><strong>{threshold}</strong></div><div><span>Всего частей</span><strong>{total}</strong></div></div><div className="strength"><span>Стойкость</span><strong>{schemeInfo.strength}</strong></div><div className="flow-diagram"><span>Seed</span><b>↓</b><span>{schemeInfo.shortLabel}</span><b>↓</b><span>{total} частей</span></div></aside>
+      <aside className="panel algorithm-panel">
+        <div className="algorithm-symbol">◇</div><h3>{schemeInfo.shortLabel}</h3>
+        <ul className="check-list">{schemeInfo.details.map((item) => <li key={item}>{item}</li>)}</ul>
+        <div className="algorithm-metrics"><div><span>Нужно частей</span><strong>{threshold}</strong></div><div><span>Всего частей</span><strong>{total}</strong></div></div>
+        <SchemeCharacteristics info={schemeInfo} />
+        <div className="flow-diagram"><span>Seed</span><b>↓</b><span>{schemeInfo.shortLabel}</span><b>↓</b><span>{total} частей</span></div>
+      </aside>
     </section>
   );
 }
@@ -157,6 +153,7 @@ type RecoveryProps = {
   recoveryRef: RefObject<HTMLElement | null>;
   recoveredRef: RefObject<HTMLDivElement | null>;
   scheme: SharingScheme;
+  schemeInfo: SchemeInfo;
   input: string;
   partCount: number;
   language: Bip39Language;
@@ -173,6 +170,7 @@ export function RecoveryWorkflow({
   recoveryRef,
   recoveredRef,
   scheme,
+  schemeInfo,
   input,
   partCount,
   language,
@@ -185,14 +183,23 @@ export function RecoveryWorkflow({
   onRestore,
 }: RecoveryProps) {
   return (
-    <section ref={recoveryRef} className="panel recovery-panel">
-      <div className="section-title"><span>01</span><div><h2>Добавьте части</h2><p>{scheme === "slip39" ? "Каждая мнемоника с новой строки" : "Разделяйте части пустой строкой"}</p></div></div>
-      <textarea value={input} onChange={(event) => onInputChange(event.target.value)} placeholder={scheme === "generic" ? "SST1-…\n\nSST1-…" : scheme === "slip39" ? "SLIP-39 mnemonic one…\nSLIP-39 mnemonic two…" : "{\"v\":1,…}\n\n{\"v\":1,…}"} spellCheck={false} />
-      {scheme === "slip39" && <div className="compat-fields"><label>Язык восстановленной BIP-39 фразы<select value={language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></div>}
-      {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields"><label>{scheme === "banana" ? "Пароль для расшифровки" : "Пароль SLIP-39"}<input type="password" value={passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Введите пароль" /></label></div>}
-      <div className="meta"><span>Распознано частей: {partCount}</span></div>
-      <button className="primary" disabled={busy || partCount === 0 || (scheme === "banana" && !passphrase)} onClick={onRestore}>{busy ? "Проверка…" : "Восстановить секрет"}</button>
-      {recovered && <div ref={recoveredRef} className="result-secret"><span>Восстановленный секрет</span><pre>{recovered}</pre></div>}
+    <section ref={recoveryRef} className="workspace recovery-workspace">
+      <div className="panel recovery-panel">
+        <div className="section-title"><span>01</span><div><h2>Добавьте части</h2><p>{scheme === "slip39" ? "Каждая мнемоника с новой строки" : "Разделяйте части пустой строкой"}</p></div></div>
+        <textarea value={input} onChange={(event) => onInputChange(event.target.value)} placeholder={scheme === "generic" ? "SST1-…\n\nSST1-…" : scheme === "slip39" ? "SLIP-39 mnemonic one…\nSLIP-39 mnemonic two…" : "{\"v\":1,…}\n\n{\"v\":1,…}"} spellCheck={false} />
+        {scheme === "slip39" && <div className="compat-fields"><label>Язык восстановленной BIP-39 фразы<select value={language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></div>}
+        {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields"><label>{scheme === "banana" ? "Пароль для расшифровки" : "Пароль SLIP-39"}<input type="password" value={passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Введите пароль" /></label></div>}
+        <div className="meta"><span>Распознано частей: {partCount}</span></div>
+        <button className="primary" disabled={busy || partCount === 0 || (scheme === "banana" && !passphrase)} onClick={onRestore}>{busy ? "Проверка…" : "Восстановить секрет"}</button>
+        {recovered && <div ref={recoveredRef} className="result-secret"><span>Восстановленный секрет</span><pre>{recovered}</pre></div>}
+      </div>
+      <aside className="panel algorithm-panel recovery-info-panel">
+        <div className="algorithm-symbol">↺</div><h3>Восстановление · {schemeInfo.shortLabel}</h3>
+        <p className="panel-intro">Программа проверит формат и объединит достаточное количество частей локально, без отправки данных в сеть.</p>
+        <ul className="check-list">{schemeInfo.recoveryNotes.map((item) => <li key={item}>{item}</li>)}</ul>
+        <SchemeCharacteristics info={schemeInfo} />
+        <div className="recovery-counter"><span>Сейчас распознано</span><strong>{partCount}</strong><small>частей</small></div>
+      </aside>
     </section>
   );
 }
