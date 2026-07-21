@@ -7,10 +7,11 @@ import {
   BIP39_WORD_COUNTS,
   type Bip39Language,
   type Bip39WordCount,
+  compactFingerprint,
   convertBip39Mnemonic,
-  entropyFingerprint,
   generateBip39Mnemonic,
   mnemonicToBip39Entropy,
+  walletSeedFingerprint,
 } from "../lib/bip39-tools";
 import { decodeShare, recoverSecret, splitSecret } from "../lib/shamir";
 import { recoverSlip39, splitSlip39 } from "../lib/slip39";
@@ -58,6 +59,10 @@ export function SeedSplitApp() {
   const words = wordCount(secret);
   const schemeInfo = SCHEMES[scheme];
   const recoveryShares = useMemo(() => parseParts(recoveryInput, scheme), [recoveryInput, scheme]);
+  const walletFingerprint = useMemo(() => {
+    try { return bip39Entropy ? walletSeedFingerprint(secret, bip39Passphrase) : "—"; }
+    catch { return "—"; }
+  }, [secret, bip39Passphrase, bip39Entropy]);
 
   function generateSeed(): void {
     const generated = generateBip39Mnemonic(bip39Words, bip39Language);
@@ -78,7 +83,7 @@ export function SeedSplitApp() {
       setBip39Entropy(converted.entropy);
       setSourceLanguage(converted.sourceLanguage);
       setShares([]);
-      setStatus("Слова изменились, но entropy осталась той же — кошелёк не изменился");
+      setStatus("Entropy не изменилась, но текст мнемоники и производный BIP-39 wallet seed изменились");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error));
     }
@@ -114,7 +119,7 @@ export function SeedSplitApp() {
     setBusy(true); setStatus("");
     try {
       let result: string;
-      if (scheme === "slip39") result = recoverSlip39(input, passphrase);
+      if (scheme === "slip39") result = recoverSlip39(input, passphrase, bip39Language);
       else if (scheme === "banana") result = await recoverBanana(input, passphrase);
       else result = await recoverSecret(input);
       setRecovered(result); setStatus("Секрет успешно восстановлен и проверен");
@@ -133,7 +138,7 @@ export function SeedSplitApp() {
 
   return <main className="shell">
     <section className="hero"><div><span className="eyebrow">LOCAL · OFFLINE · OPEN SOURCE</span><h1>Seed Split Tool</h1><p>Разделите seed-фразу или другой секрет по схеме K из N. Ни одна часть не покидает устройство.</p></div><div className="offline-pill"><span /> Сеть не используется</div></section>
-    <section className="warning"><strong>Важно:</strong> схемы несовместимы между собой. BIP-39 passphrase не записывается в seed-фразу и должна храниться отдельно. SLIP-39 использует собственный пароль защиты частей.</section>
+    <section className="warning"><strong>Важно:</strong> BIP-39 passphrase не записывается в мнемонику. Смена официального словаря сохраняет исходную entropy, но меняет текст мнемоники и производный wallet seed — это уже другой кошелёк.</section>
 
     <section className="panel scheme-panel">
       <label htmlFor="scheme-select"><strong>Схема разделения</strong></label>
@@ -149,12 +154,12 @@ export function SeedSplitApp() {
         <div className="section-title"><span>00</span><div><h2>Генератор BIP-39</h2><p>Создаёт entropy локально через Web Crypto</p></div></div>
         <div className="generator-controls">
           <label>Количество слов<select value={bip39Words} onChange={(event) => setBip39Words(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
-          <label>Алфавит / словарь<select value={bip39Language} onChange={(event) => changeLanguage(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
+          <label>Официальный словарь<select value={bip39Language} onChange={(event) => changeLanguage(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
           <button type="button" onClick={generateSeed}>Сгенерировать seed</button>
         </div>
         <label className="bip39-passphrase">BIP-39 passphrase («25-е слово», необязательно)<input type="password" value={bip39Passphrase} onChange={(event) => setBip39Passphrase(event.target.value)} placeholder="Не входит в мнемонику — храните отдельно" autoComplete="new-password" /></label>
-        <div className="entropy-proof"><div><span>Исходный словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{entropyFingerprint(bip39Entropy)}</code></div><div><span>При смене алфавита</span><strong>кошелёк тот же</strong></div></div>
-        <p className="entropy-note">Слова — это представление чисел из одного и того же набора entropy. Переключение официального BIP-39 словаря меняет только написание слов, но не лежащие под ними данные.</p>
+        <div className="entropy-proof"><div><span>Исходный словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy — не меняется</span><code>{compactFingerprint(bip39Entropy)}</code></div><div><span>Wallet seed — меняется</span><code>{walletFingerprint}</code></div></div>
+        <p className="entropy-note">Одинаковые индексы слов действительно кодируют одну entropy. Но BIP-39 затем использует полный текст мнемоники как пароль PBKDF2, поэтому другой язык создаёт другой 512-битный wallet seed.</p>
       </section>}
 
       <div className="section-title"><span>01</span><div><h2>Исходный секрет</h2><p>{scheme === "slip39" ? "BIP-39 seed-фраза в любом официальном словаре" : "Seed-фраза, пароль, ключ или произвольный текст"}</p></div></div>
@@ -171,6 +176,7 @@ export function SeedSplitApp() {
     </div><aside className="panel explainer"><div className="lock-art">◇</div><h3>Как это работает</h3><p>Любых {threshold} частей достаточно для восстановления. Формат и дополнительные проверки зависят от выбранной схемы.</p><ul><li>Храните части в разных местах</li><li>Passphrase храните отдельно</li><li>Обязательно проверьте восстановление</li></ul></aside></section> : <section className="panel recovery-panel">
       <div className="section-title"><span>01</span><div><h2>Добавьте части</h2><p>{scheme === "slip39" ? "Каждая мнемоника с новой строки" : "Разделяйте части пустой строкой"}</p></div></div>
       <textarea value={recoveryInput} onChange={(event) => setRecoveryInput(event.target.value)} placeholder={scheme === "generic" ? "SST1-…\n\nSST1-…" : scheme === "slip39" ? "SLIP-39 mnemonic one…\nSLIP-39 mnemonic two…" : "{\"v\":1,…}\n\n{\"v\":1,…}"} spellCheck={false} />
+      {scheme === "slip39" && <div className="compat-fields"><label>Язык восстановленной BIP-39 фразы<select value={bip39Language} onChange={(event) => setBip39Language(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label></div>}
       {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields"><label>{scheme === "banana" ? "Пароль Banana Split (обязательно)" : "Пароль SLIP-39"}<input type="password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} placeholder="Введите пароль" /></label></div>}
       <div className="meta"><span>Распознано частей: {recoveryShares.length}</span></div><button className="primary" disabled={busy || recoveryShares.length === 0 || (scheme === "banana" && !passphrase)} onClick={() => restore()}>{busy ? "Проверка…" : "Восстановить секрет"}</button>
       {recovered && <div className="result-secret"><span>Восстановленный секрет</span><pre>{recovered}</pre></div>}
