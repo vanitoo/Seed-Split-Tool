@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:crypto": "node scripts/crypto-smoke.mjs",
-    "check": "npm run test:crypto && npm run typecheck && npm run lint && npm run build"
+    "test:slip39-vectors": "node scripts/slip39-official-vectors.mjs",
+    "check": "npm run test:crypto && npm run test:slip39-vectors && npm run typecheck && npm run lint && npm run build"
   },
   "dependencies": {
     "base64-js": "^1.5.1",
