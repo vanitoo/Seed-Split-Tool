@@ -189,6 +189,6 @@ export function SeedSplitApp() {
     {status && <div className={isErrorStatus(status) ? "status error" : "status"}>{status}</div>}
     {mode === "split" && <ShareResults resultsRef={resultsRef} shares={shares} total={total} threshold={threshold} setLabel={setLabel} verified={verified} scheme={scheme} onCopy={(share) => navigator.clipboard.writeText(share)} onDownloadShare={(share, index) => downloadText(`seed-share-${index + 1}-of-${total}.txt`, share)} onVerify={() => { setRecoveryInput(shares.slice(0, threshold).join(joiner)); setStatus(""); setMode("recover"); scrollTo(recoveryRef); }} onPrint={() => window.print()} onDownloadAll={() => downloadText(`seed-split-${scheme}.txt`, shares.join(joiner))} onClear={clearAll} />}
 
-    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.5.0 · MIT License</span></footer>
+    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.5.1 · MIT License</span></footer>
   </main>;
 }
