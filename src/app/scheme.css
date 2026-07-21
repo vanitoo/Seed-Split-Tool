@@ -6,7 +6,8 @@
   align-items: center;
 }
 
-.scheme-panel select {
+.scheme-panel select,
+.generator-controls select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -20,6 +21,90 @@
   margin: 0;
   color: var(--muted);
 }
+
+.seed-generator {
+  margin-bottom: 1.6rem;
+  padding: 1rem;
+  border: 1px solid #315f50;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(20, 56, 44, 0.65), rgba(7, 21, 16, 0.7));
+}
+
+.generator-controls {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.65fr) minmax(180px, 1fr) auto;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.generator-controls label,
+.bip39-passphrase {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.generator-controls button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  background: var(--accent);
+  color: #052117;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.bip39-passphrase { margin-top: 0.9rem; }
+.bip39-passphrase input,
+.compat-fields input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #477466;
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  background: #06110e;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.bip39-passphrase input[type="password"],
+.compat-fields input[type="password"] {
+  border: 2px solid var(--accent);
+  background: #0b2119;
+  box-shadow: 0 0 0 3px rgba(108, 243, 177, 0.08);
+}
+
+.entropy-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+
+.entropy-proof > div {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #071510;
+}
+
+.entropy-proof span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.entropy-proof strong { color: var(--accent); }
+.entropy-proof code { color: #d8fff0; word-break: break-all; }
+.entropy-note { margin: 0.8rem 0 0; color: var(--muted); line-height: 1.55; }
 
 .compat-fields {
   display: grid;
@@ -36,31 +121,23 @@
   font-weight: 800;
 }
 
-.compat-fields input {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid #477466;
-  border-radius: 12px;
-  padding: 0.8rem 0.9rem;
-  background: #06110e;
-  color: var(--text);
-  font: inherit;
-  outline: none;
-}
-
-.compat-fields input[type="password"] {
-  border: 2px solid var(--accent);
-  background: #0b2119;
-  box-shadow: 0 0 0 3px rgba(108, 243, 177, 0.08);
-}
-
+.bip39-passphrase input::placeholder,
 .compat-fields input::placeholder { color: #78988b; }
+.bip39-passphrase input:focus,
 .compat-fields input:focus {
   border-color: #b2ffda;
   box-shadow: 0 0 0 4px rgba(108, 243, 177, 0.18);
 }
 
+@media (max-width: 850px) {
+  .generator-controls { grid-template-columns: 1fr 1fr; }
+  .generator-controls button { grid-column: 1 / -1; }
+  .entropy-proof { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 720px) {
   .scheme-panel { grid-template-columns: 1fr; }
-  .compat-fields { grid-template-columns: 1fr; }
+  .compat-fields,
+  .generator-controls { grid-template-columns: 1fr; }
+  .generator-controls button { grid-column: auto; }
 }
