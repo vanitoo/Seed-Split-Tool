@@ -39,6 +39,9 @@ jobs:
       - name: Cryptographic round-trip tests
         run: npm run test:crypto
 
+      - name: Official SLIP-39 compatibility vectors
+        run: npm run test:slip39-vectors
+
       - name: TypeScript
         run: npm run typecheck
 
