@@ -114,9 +114,9 @@ See [`docs/AUDIT.md`](docs/AUDIT.md) for the current risk assessment.
 
 ## Project status
 
-Current release: **v0.5.0**
+Current release: **v0.5.1**
 
-The architecture revision is complete. Dependency pinning, browser end-to-end tests, accessibility, offline recovery verification, and final security review remain planned before version 1.0.
+The architecture revision is complete and its React refs lint regression is fixed. Dependency pinning, browser end-to-end tests, accessibility, offline recovery verification, and final security review remain planned before version 1.0.
 
 See [`ROADMAP.md`](ROADMAP.md), [`VERSION.md`](VERSION.md), and [`CHANGELOG.md`](CHANGELOG.md).
 
