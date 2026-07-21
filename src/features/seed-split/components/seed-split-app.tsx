@@ -16,7 +16,7 @@ import {
 import { decodeShare, recoverSecret, splitSecret } from "../lib/shamir";
 import { recoverSlip39, splitSlip39 } from "../lib/slip39";
 
-type Mode = "split" | "recover";
+type Mode = "generate" | "split" | "recover";
 type Scheme = "generic" | "slip39" | "banana";
 
 type SchemeInfo = {
@@ -78,7 +78,7 @@ function parseParts(value: string, scheme: Scheme): string[] {
 }
 
 export function SeedSplitApp() {
-  const [mode, setMode] = useState<Mode>("split");
+  const [mode, setMode] = useState<Mode>("generate");
   const [scheme, setScheme] = useState<Scheme>("slip39");
   const [secret, setSecret] = useState("");
   const [visible, setVisible] = useState(false);
@@ -116,6 +116,7 @@ export function SeedSplitApp() {
     setSourceLanguage(bip39Language);
     setShares([]);
     setRecovered("");
+    setVerified(false);
     setStatus(`Создана BIP-39 фраза: ${bip39Words} слов`);
   }
 
@@ -128,6 +129,7 @@ export function SeedSplitApp() {
       setBip39Entropy(converted.entropy);
       setSourceLanguage(converted.sourceLanguage);
       setShares([]);
+      setVerified(false);
       setStatus("Entropy не изменилась, но текст мнемоники и производный wallet seed изменились");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error));
@@ -137,6 +139,7 @@ export function SeedSplitApp() {
   function updateSecret(value: string): void {
     setSecret(value);
     setShares([]);
+    setVerified(false);
     if (scheme !== "slip39" || !value.trim()) {
       setBip39Entropy("");
       setSourceLanguage(null);
@@ -149,6 +152,25 @@ export function SeedSplitApp() {
     } catch {
       setBip39Entropy("");
       setSourceLanguage(null);
+    }
+  }
+
+  function selectScheme(nextScheme: Scheme): void {
+    setScheme(nextScheme);
+    setShares([]);
+    setRecovered("");
+    setRecoveryInput("");
+    setStatus("");
+    setVerified(false);
+    if (nextScheme === "slip39" && secret.trim()) {
+      try {
+        const parsed = mnemonicToBip39Entropy(secret);
+        setBip39Entropy(parsed.entropy);
+        setSourceLanguage(parsed.language);
+      } catch {
+        setBip39Entropy("");
+        setSourceLanguage(null);
+      }
     }
   }
 
@@ -208,33 +230,47 @@ export function SeedSplitApp() {
   const sourceLanguageLabel = sourceLanguage ? BIP39_LANGUAGES.find((item) => item.value === sourceLanguage)?.label : "не определён";
 
   return <main className="shell">
-    <section className="hero"><div><span className="eyebrow">LOCAL · OFFLINE · OPEN SOURCE</span><h1>Seed Split Tool</h1><p>Разделите seed-фразу или другой секрет по схеме K из N. Ни одна часть не покидает устройство.</p></div><div className="offline-pill"><span /> Сеть не используется</div></section>
+    <section className="hero"><div><span className="eyebrow">LOCAL · OFFLINE · OPEN SOURCE</span><h1>Seed Split Tool</h1><p>Создавайте, разделяйте и восстанавливайте seed-фразы локально. Данные не покидают устройство.</p></div><div className="offline-pill"><span /> Сеть не используется</div></section>
     <section className="warning"><strong>Важно:</strong> BIP-39 passphrase не записывается в мнемонику. Смена официального словаря сохраняет entropy, но меняет итоговый wallet seed.</section>
 
-    <section className="panel scheme-panel">
-      <label htmlFor="scheme-select"><strong>Схема разделения</strong></label>
-      <select id="scheme-select" value={scheme} onChange={(event) => { setScheme(event.target.value as Scheme); setShares([]); setRecovered(""); setRecoveryInput(""); setStatus(""); }}>
+    <div className="tabs main-tabs" role="tablist" aria-label="Основные инструменты">
+      <button className={mode === "generate" ? "active" : ""} onClick={() => { setMode("generate"); setStatus(""); }}>Генерация</button>
+      <button className={mode === "split" ? "active" : ""} onClick={() => { setMode("split"); setStatus(""); }}>Разделить seed</button>
+      <button className={mode === "recover" ? "active" : ""} onClick={() => { setMode("recover"); setStatus(""); }}>Восстановить</button>
+    </div>
+
+    {mode !== "generate" && <section className="panel scheme-panel">
+      <label htmlFor="scheme-select"><strong>{mode === "split" ? "Схема разделения" : "Формат частей"}</strong></label>
+      <select id="scheme-select" value={scheme} onChange={(event) => selectScheme(event.target.value as Scheme)}>
         <option value="slip39">SLIP-39 · готово</option>
         <option value="banana">Banana Split · готово</option>
         <option value="generic">Generic SST1 · готово</option>
       </select>
       <p>{schemeInfo.description}</p>
-    </section>
+    </section>}
 
-    <div className="tabs" role="tablist"><button className={mode === "split" ? "active" : ""} onClick={() => setMode("split")}>Разделить секрет</button><button className={mode === "recover" ? "active" : ""} onClick={() => setMode("recover")}>Восстановить</button></div>
+    {mode === "generate" && <section className="workspace generator-workspace">
+      <div className="panel input-panel">
+        <section className="seed-generator standalone-generator">
+          <div className="section-title"><span>01</span><div><h2>Генератор BIP-39</h2><p>Создаёт новую seed-фразу локально через Web Crypto</p></div></div>
+          <div className="generator-controls">
+            <label>Количество слов<select value={bip39Words} onChange={(event) => setBip39Words(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
+            <label>Официальный словарь<select value={bip39Language} onChange={(event) => changeLanguage(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
+            <button type="button" onClick={generateSeed}>Сгенерировать seed</button>
+          </div>
+          <label className="bip39-passphrase">BIP-39 passphrase («25-е слово», необязательно)<input type="password" value={bip39Passphrase} onChange={(event) => setBip39Passphrase(event.target.value)} placeholder="Не входит в мнемонику — храните отдельно" autoComplete="new-password" /></label>
+          <div className="entropy-proof"><div><span>Словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{compactFingerprint(bip39Entropy)}</code></div><div><span>Wallet seed</span><code>{walletFingerprint}</code></div></div>
+        </section>
 
-    {mode === "split" ? <section className="workspace"><div className="panel input-panel">
-      {scheme === "slip39" && <section className="seed-generator">
-        <div className="section-title"><span>00</span><div><h2>Генератор BIP-39</h2><p>Создаёт entropy локально через Web Crypto</p></div></div>
-        <div className="generator-controls">
-          <label>Количество слов<select value={bip39Words} onChange={(event) => setBip39Words(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
-          <label>Официальный словарь<select value={bip39Language} onChange={(event) => changeLanguage(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
-          <button type="button" onClick={generateSeed}>Сгенерировать seed</button>
-        </div>
-        <label className="bip39-passphrase">BIP-39 passphrase («25-е слово», необязательно)<input type="password" value={bip39Passphrase} onChange={(event) => setBip39Passphrase(event.target.value)} placeholder="Не входит в мнемонику — храните отдельно" autoComplete="new-password" /></label>
-        <div className="entropy-proof"><div><span>Исходный словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{compactFingerprint(bip39Entropy)}</code></div><div><span>Wallet seed</span><code>{walletFingerprint}</code></div></div>
-      </section>}
+        <div className="section-title"><span>02</span><div><h2>Созданная seed-фраза</h2><p>Проверьте язык, количество слов и сохраните фразу безопасным способом</p></div></div>
+        <div className="secret-wrap"><textarea value={secret} onChange={(event) => updateSecret(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={() => setVisible((value) => !value)}>{visible ? "Скрыть" : "Показать"}</button></div>
+        <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span><span>{bip39Entropy ? "BIP-39 корректна" : "Seed ещё не создана"}</span></div>
+        {secret && <div className="generation-actions"><button onClick={() => navigator.clipboard.writeText(secret)}>Копировать</button><button onClick={() => downloadText("bip39-seed.txt", secret)}>Скачать</button><button className="primary-inline" onClick={() => { setScheme("slip39"); setMode("split"); setStatus("Сгенерированная seed-фраза передана в разделение"); }}>Перейти к разделению →</button></div>}
+      </div>
+      <aside className="panel explainer"><div className="lock-art">◇</div><h3>Как работает генерация</h3><p>Браузер создаёт криптографически случайную entropy и кодирует её словами из официального словаря BIP-39.</p><ul><li>Seed создаётся только на этом устройстве</li><li>Passphrase создаёт отдельный кошелёк</li><li>Перед использованием обязательно сохраните резервную копию</li></ul></aside>
+    </section>}
 
+    {mode === "split" && <section className="workspace"><div className="panel input-panel">
       <div className="section-title"><span>01</span><div><h2>Исходный секрет</h2><p>{scheme === "slip39" ? "BIP-39 seed-фраза в любом официальном словаре" : "Seed-фраза, пароль, ключ или произвольный текст"}</p></div></div>
       <div className="secret-wrap"><textarea value={secret} onChange={(event) => updateSecret(event.target.value)} className={visible ? "" : "masked"} placeholder="Введите секрет здесь…" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={() => setVisible((value) => !value)}>{visible ? "Скрыть" : "Показать"}</button></div>
       <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span>{scheme === "slip39" && <span>{bip39Entropy ? "BIP-39 корректна" : "BIP-39 не распознана"}</span>}</div>
@@ -246,7 +282,9 @@ export function SeedSplitApp() {
       <div className="settings-grid"><label>Всего частей<strong>{total}</strong><input type="range" min="2" max="10" value={total} onChange={(event) => { const n = Number(event.target.value); setTotal(n); if (threshold > n) setThreshold(n); }} /></label><label>Нужно частей<strong>{threshold}</strong><input type="range" min="2" max={total} value={threshold} onChange={(event) => setThreshold(Number(event.target.value))} /></label></div>
       <div className="preset-row">{[[2,3],[3,5],[4,7]].map(([k,n]) => <button key={`${k}-${n}`} onClick={() => { setThreshold(k); setTotal(n); }}>{k} из {n}</button>)}</div>
       <button className="primary" disabled={busy || !secret.trim() || (scheme === "slip39" && !bip39Entropy) || (scheme === "banana" && !passphrase)} onClick={createShares}>{busy ? "Обработка…" : `Создать ${total} частей`}</button>
-    </div><aside className="panel explainer"><div className="lock-art">◇</div><h3>Как работает {schemeInfo.label}</h3><p>{schemeInfo.howItWorks}</p><ul>{schemeInfo.details.map((item) => <li key={item}>{item}</li>)}</ul></aside></section> : <section className="panel recovery-panel">
+    </div><aside className="panel explainer"><div className="lock-art">◇</div><h3>Как работает {schemeInfo.label}</h3><p>{schemeInfo.howItWorks}</p><ul>{schemeInfo.details.map((item) => <li key={item}>{item}</li>)}</ul></aside></section>}
+
+    {mode === "recover" && <section className="panel recovery-panel">
       <div className="section-title"><span>01</span><div><h2>Добавьте части</h2><p>{scheme === "slip39" ? "Каждая мнемоника с новой строки" : "Разделяйте части пустой строкой"}</p></div></div>
       <textarea value={recoveryInput} onChange={(event) => setRecoveryInput(event.target.value)} placeholder={scheme === "generic" ? "SST1-…\n\nSST1-…" : scheme === "slip39" ? "SLIP-39 mnemonic one…\nSLIP-39 mnemonic two…" : "{\"v\":1,…}\n\n{\"v\":1,…}"} spellCheck={false} />
       {scheme === "slip39" && <div className="compat-fields"><label>Язык восстановленной BIP-39 фразы<select value={bip39Language} onChange={(event) => setBip39Language(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label></div>}
@@ -259,7 +297,7 @@ export function SeedSplitApp() {
     {status && <div className={status.includes("Некоррект") || status.includes("Нужно") || status.includes("Невер") || status.includes("повреж") || status.includes("Не удалось") || status.includes("неожиданной") ? "status error" : "status"}>{status}</div>}
     {mode === "split" && shares.length > 0 && <section className="results"><div className="results-head"><div><span className="eyebrow">{setLabel}</span><h2>Ваши части готовы</h2><p>Для восстановления требуется {threshold} из {total} частей.</p></div><div className={verified ? "verify-badge ok" : "verify-badge"}>{verified ? "✓ Набор проверен" : "Набор ещё не проверен"}</div></div>
       <div className="share-grid">{shares.map((share, index) => <article className="share-card" key={`${index}-${share}`}><header><span>ЧАСТЬ {index + 1}</span><b>{index + 1}/{total}</b></header><div className="share-code">{share}</div><footer><button onClick={() => navigator.clipboard.writeText(share)}>Копировать</button><button onClick={() => downloadText(`seed-share-${index + 1}-of-${total}.txt`, share)}>Скачать</button></footer></article>)}</div>
-      <div className="verify-panel"><div><h3>Проверьте резервную копию</h3><p>Восстановите секрет из любых {threshold} частей до того, как разнесёте их по разным местам.</p></div><button onClick={() => { setMode("recover"); setRecoveryInput(shares.slice(0, threshold).join(joiner)); }}>Проверить сейчас</button></div>
+      <div className="verify-panel"><div><h3>Проверьте резервную копию</h3><p>Восстановите секрет из любых {threshold} частей до того, как разнесёте их по разным местам.</p></div><button onClick={() => { setMode("recover"); setRecoveryInput(shares.slice(0, threshold).join(joiner)); setStatus(""); }}>Проверить сейчас</button></div>
       <div className="actions"><button onClick={() => window.print()}>Печать</button><button onClick={() => downloadText(`seed-split-${scheme}.txt`, shares.join(joiner))}>Скачать весь набор</button><button className="danger" onClick={clearAll}>Очистить всё</button></div>
     </section>}
   </main>;
