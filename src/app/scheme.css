@@ -21,6 +21,46 @@
   color: var(--muted);
 }
 
+.compat-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.15rem;
+}
+
+.compat-fields label {
+  display: grid;
+  gap: 0.55rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.compat-fields input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #477466;
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  background: #06110e;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.compat-fields input[type="password"] {
+  border: 2px solid var(--accent);
+  background: #0b2119;
+  box-shadow: 0 0 0 3px rgba(108, 243, 177, 0.08);
+}
+
+.compat-fields input::placeholder { color: #78988b; }
+.compat-fields input:focus {
+  border-color: #b2ffda;
+  box-shadow: 0 0 0 4px rgba(108, 243, 177, 0.18);
+}
+
 @media (max-width: 720px) {
   .scheme-panel { grid-template-columns: 1fr; }
+  .compat-fields { grid-template-columns: 1fr; }
 }

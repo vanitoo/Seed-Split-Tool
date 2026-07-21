@@ -96,7 +96,7 @@ export function SeedSplitApp() {
       <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span></div>
       {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields">
         {scheme === "banana" && <label>Название набора<input value={bananaTitle} onChange={(event) => setBananaTitle(event.target.value)} /></label>}
-        <label>{scheme === "banana" ? "Пароль Banana Split" : "Пароль SLIP-39 (необязательно)"}<input type="password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} autoComplete="new-password" /></label>
+        <label>{scheme === "banana" ? "Пароль Banana Split (обязательно)" : "Пароль SLIP-39 (необязательно)"}<input type="password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} autoComplete="new-password" placeholder="Введите пароль" /></label>
       </div>}
       <div className="section-title settings-title"><span>02</span><div><h2>Схема хранения</h2><p>Сколько частей создать и сколько нужно для восстановления</p></div></div>
       <div className="settings-grid"><label>Всего частей<strong>{total}</strong><input type="range" min="2" max="10" value={total} onChange={(event) => { const n = Number(event.target.value); setTotal(n); if (threshold > n) setThreshold(n); }} /></label><label>Нужно частей<strong>{threshold}</strong><input type="range" min="2" max={total} value={threshold} onChange={(event) => setThreshold(Number(event.target.value))} /></label></div>
@@ -105,7 +105,7 @@ export function SeedSplitApp() {
     </div><aside className="panel explainer"><div className="lock-art">◇</div><h3>Как это работает</h3><p>Любых {threshold} частей достаточно для восстановления. Формат и дополнительные проверки зависят от выбранной схемы.</p><ul><li>Храните части в разных местах</li><li>Пароль храните отдельно</li><li>Обязательно проверьте восстановление</li></ul></aside></section> : <section className="panel recovery-panel">
       <div className="section-title"><span>01</span><div><h2>Добавьте части</h2><p>{scheme === "slip39" ? "Каждая мнемоника с новой строки" : "Разделяйте части пустой строкой"}</p></div></div>
       <textarea value={recoveryInput} onChange={(event) => setRecoveryInput(event.target.value)} placeholder={scheme === "generic" ? "SST1-…\n\nSST1-…" : scheme === "slip39" ? "SLIP-39 mnemonic one…\nSLIP-39 mnemonic two…" : "{\"v\":1,…}\n\n{\"v\":1,…}"} spellCheck={false} />
-      {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields"><label>{scheme === "banana" ? "Пароль Banana Split" : "Пароль SLIP-39"}<input type="password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} /></label></div>}
+      {(scheme === "slip39" || scheme === "banana") && <div className="compat-fields"><label>{scheme === "banana" ? "Пароль Banana Split (обязательно)" : "Пароль SLIP-39"}<input type="password" value={passphrase} onChange={(event) => setPassphrase(event.target.value)} placeholder="Введите пароль" /></label></div>}
       <div className="meta"><span>Распознано частей: {recoveryShares.length}</span></div><button className="primary" disabled={busy || recoveryShares.length === 0 || (scheme === "banana" && !passphrase)} onClick={() => restore()}>{busy ? "Проверка…" : "Восстановить секрет"}</button>
       {recovered && <div className="result-secret"><span>Восстановленный секрет</span><pre>{recovered}</pre></div>}
     </section>}
