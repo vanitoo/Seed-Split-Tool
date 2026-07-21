@@ -6,7 +6,7 @@ All notable project changes are documented in this file.
 
 ### Added
 
-- Dedicated **Generation**, **Split seed**, and **Recover** tabs.
+- Dedicated Generation, Split seed, and Recover tabs.
 - Local BIP-39 mnemonic generator with official wordlists.
 - Entropy fingerprint and Wallet fingerprint indicators.
 - Optional BIP-39 Passphrase field with contextual help.
@@ -15,6 +15,7 @@ All notable project changes are documented in this file.
 - Algorithm information panels with threshold and total-share summaries.
 - Smooth scrolling to generated shares, recovery form, and recovered secret.
 - Application version in the footer.
+- Official SLIP-39 compatibility-vector tests.
 
 ### Changed
 
@@ -29,6 +30,7 @@ All notable project changes are documented in this file.
 
 - Removed the large technical BIP-39 warning from the top of the application.
 - Removed outdated documentation that described SLIP-39 and Banana Split as disabled.
+- Removed unused starter-template AppHeader, Button, and formatBytes code.
 
 ## 0.3.0 - 2026-07-21
 
@@ -46,6 +48,6 @@ All notable project changes are documented in this file.
 
 - Replaced the browser-tool demo with Seed Split Tool.
 - Added local Shamir K-of-N splitting over GF(256).
-- Added the versioned `SST1` share envelope with set ID and SHA-256 checksum.
+- Added the versioned SST1 share envelope with set ID and SHA-256 checksum.
 - Added recovery, duplicate handling, mixed-set validation, backup verification, printing, and text downloads.
 - Added a responsive privacy-first interface.
