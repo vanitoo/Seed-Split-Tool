@@ -1,4 +1,4 @@
-import { entropyToMnemonic, mnemonicToEntropy, validateMnemonic, wordlists } from "bip39";
+import { entropyToMnemonic, mnemonicToEntropy, mnemonicToSeedSync, validateMnemonic, wordlists } from "bip39";
 
 export type Bip39Language =
   | "english"
@@ -69,7 +69,12 @@ export function convertBip39Mnemonic(mnemonic: string, targetLanguage: Bip39Lang
   };
 }
 
-export function entropyFingerprint(entropy: string): string {
-  if (!entropy) return "—";
-  return `${entropy.slice(0, 8)}…${entropy.slice(-8)}`;
+export function compactFingerprint(hex: string): string {
+  if (!hex) return "—";
+  return `${hex.slice(0, 8)}…${hex.slice(-8)}`;
+}
+
+export function walletSeedFingerprint(mnemonic: string, passphrase: string): string {
+  if (!mnemonic.trim()) return "—";
+  return compactFingerprint(mnemonicToSeedSync(mnemonic.normalize("NFKD"), passphrase.normalize("NFKD")).toString("hex"));
 }
