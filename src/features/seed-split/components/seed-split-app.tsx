@@ -225,7 +225,6 @@ export function SeedSplitApp() {
 
   return <main className="shell">
     <section className="hero"><div><span className="eyebrow">LOCAL · OFFLINE · OPEN SOURCE</span><h1>Seed Split Tool</h1><p>Создавайте, разделяйте и восстанавливайте seed-фразы локально. Данные не покидают устройство.</p></div><div className="offline-pill"><span /> Сеть не используется</div></section>
-    <section className="warning"><strong>Важно:</strong> BIP-39 Passphrase не записывается в мнемонику. Смена официального словаря сохраняет entropy, но меняет Wallet fingerprint.</section>
 
     <div className="tabs main-tabs" role="tablist" aria-label="Основные инструменты">
       <button className={mode === "generate" ? "active" : ""} onClick={() => { setMode("generate"); setStatus(""); }}>Генерация</button>
@@ -286,5 +285,7 @@ export function SeedSplitApp() {
       <div className="verify-panel"><div><h3>Проверьте резервную копию</h3><p>Восстановите секрет из любых {threshold} частей до того, как разнесёте их по разным местам.</p></div><button onClick={() => { setRecoveryInput(shares.slice(0, threshold).join(joiner)); setStatus(""); setMode("recover"); scrollTo(recoveryRef); }}>Проверить сейчас</button></div>
       <div className="actions"><button onClick={() => window.print()}>Печать</button><button onClick={() => downloadText(`seed-split-${scheme}.txt`, shares.join(joiner))}>Скачать весь набор</button><button className="danger" onClick={clearAll}>Очистить всё</button></div>
     </section>}
+
+    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.4.0 · MIT License</span></footer>
   </main>;
 }
