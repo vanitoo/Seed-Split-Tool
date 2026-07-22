@@ -15,7 +15,6 @@ The application works entirely in the browser. Seed phrases, passwords, shares, 
 - Generic Shamir Secret Sharing in the project-specific `SST1` format
 - Configurable K-of-N recovery schemes
 - Guided backup verification
-- Printable 12-word and 24-word folding seed cards
 - Print and text export
 - Smooth navigation between generation, splitting, and recovery
 - Static GitHub Pages deployment
@@ -107,7 +106,6 @@ The complete pipeline includes:
 - Use the downloaded static build on a trusted, preferably offline computer.
 - Never store all shares in the same place.
 - Store BIP-39, SLIP-39, and Banana passwords separately from the shares.
-- BIP-39 Passphrase values are not included on printed seed cards.
 - Verify recovery before relying on a backup.
 - Clipboard history, browser extensions, screen capture tools, and printers may expose sensitive data.
 - JavaScript cannot guarantee immediate removal of secrets from device memory.
@@ -116,9 +114,9 @@ See [`docs/AUDIT.md`](docs/AUDIT.md) for the current risk assessment.
 
 ## Project status
 
-Current release: **v0.5.4**
+Current release: **v0.5.5**
 
-Recovery results now appear without automatically moving the page or changing the user's working position. Dependency pinning, browser end-to-end tests, accessibility, offline recovery verification, and final security review remain planned before version 1.0.
+Workflow navigation no longer moves the page when the Recover tab is selected, scheme labels are simplified, and generation actions use the Print, Download, Copy order. Dependency pinning, browser end-to-end tests, accessibility, offline recovery verification, and final security review remain planned before version 1.0.
 
 See [`ROADMAP.md`](ROADMAP.md), [`VERSION.md`](VERSION.md), and [`CHANGELOG.md`](CHANGELOG.md).
 
