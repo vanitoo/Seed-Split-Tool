@@ -1,6 +1,6 @@
 import type { Bip39Language, Bip39WordCount } from "./lib/bip39-tools";
 
-export type WorkflowMode = "generate" | "split" | "recover";
+export type WorkflowMode = "generate" | "split" | "recover" | "multisig";
 export type SharingScheme = "generic" | "slip39" | "banana";
 
 export type SchemeInfo = {
