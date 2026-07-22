@@ -1,6 +1,6 @@
 {
   "name": "seed-split-tool",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "private": true,
   "description": "Privacy-first offline seed generation, secret sharing and recovery with SLIP-39, Banana Split and generic Shamir support.",
   "scripts": {
