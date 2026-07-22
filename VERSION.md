@@ -1,22 +1,19 @@
 # Version
 
-Current release: **v0.5.3**
+Current release: **v0.5.4**
 
 Release date: **2026-07-22**
 
 ## Release summary
 
-Version 0.5.3 adds a printable folding backup card for generated BIP-39 seed phrases.
+Version 0.5.4 removes the unexpected automatic page movement after recovery.
 
 The release includes:
 
-- a Print action beside Copy on the generation tab;
-- an automatically sized 12-slot or 24-slot seed layout;
-- numbered word lines arranged in two columns;
-- fold guides and crop marks for a paper backup card;
-- offline-storage warnings and optional wallet/date note fields;
-- deliberate exclusion of the BIP-39 Passphrase from printed output;
-- unchanged cryptographic behavior.
+- no automatic scrolling after clicking **Restore secret**;
+- the recovered secret remains directly below the restore controls;
+- the current input position and focus are preserved;
+- unchanged recovery and cryptographic behavior.
 
 ## Stability
 
