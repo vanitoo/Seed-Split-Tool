@@ -2,6 +2,19 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.3 - 2026-07-22
+
+### Added
+
+- Added a Print action beside Copy on the BIP-39 generation tab.
+- Added a dedicated folding paper backup card for generated seed phrases.
+- Added automatic 12-slot and 24-slot layouts with numbered word lines.
+- Added fold guides, crop marks, wallet/date note lines, and offline-storage warnings.
+
+### Security
+
+- BIP-39 Passphrase values are deliberately excluded from printed output and must be stored separately.
+
 ## 0.5.2 - 2026-07-22
 
 ### Changed
