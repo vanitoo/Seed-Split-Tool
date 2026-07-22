@@ -1,8 +1,8 @@
 {
   "name": "seed-split-tool",
-  "version": "0.5.5",
+  "version": "0.6.0-dev",
   "private": true,
-  "description": "Privacy-first offline seed generation, secret sharing and recovery with SLIP-39, Banana Split and generic Shamir support.",
+  "description": "Privacy-first offline seed generation, secret sharing, recovery and Bitcoin multisig descriptor preparation.",
   "scripts": {
     "dev": "next dev --hostname localhost --port 3200",
     "build": "next build --webpack",
