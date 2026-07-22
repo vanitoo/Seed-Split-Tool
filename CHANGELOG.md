@@ -2,6 +2,18 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.5 - 2026-07-22
+
+### Fixed
+
+- Removed automatic scrolling when the **Recover** tab is selected.
+
+### Changed
+
+- Simplified scheme selector entries to `SLIP-39`, `Banana Split`, and `Generic SST1`.
+- Reordered generation actions to Print, Download, and Copy.
+- Updated the displayed and package version to 0.5.5.
+
 ## 0.5.4 - 2026-07-22
 
 ### Fixed
