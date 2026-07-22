@@ -1,6 +1,6 @@
 {
   "name": "seed-split-tool",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "private": true,
   "description": "Privacy-first offline seed generation, secret sharing and recovery with SLIP-39, Banana Split and generic Shamir support.",
   "scripts": {
@@ -20,7 +20,7 @@
     "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "scryptsy": "^2.1.0",
+    "scryptsy": "^1.0.0",
     "secrets.js-grempe": "^2.0.0",
     "slip39": "^0.1.9",
     "tweetnacl": "^1.0.3"
