@@ -15,8 +15,9 @@ import {
 import { decodeShare, recoverSecret, splitSecret } from "../lib/shamir";
 import { recoverSlip39, splitSlip39 } from "../lib/slip39";
 import { SCHEMES, type SharingScheme, type WorkflowMode } from "../model";
+import { MultisigBuilder } from "./multisig-builder";
 import { ShareResults } from "./share-results";
-import { GenerationWorkflow, RecoveryWorkflow, SchemeSelector, SplitWorkflow, WorkflowTabs } from "./workflow-panels";
+import { GenerationWorkflow, RecoveryWorkflow, SchemeSelector, SplitWorkflow } from "./workflow-panels";
 
 export function SeedSplitApp() {
   const [mode, setMode] = useState<WorkflowMode>("generate");
@@ -175,18 +176,22 @@ export function SeedSplitApp() {
 
   return <main className="shell">
     <section className="hero"><div><span className="eyebrow">LOCAL · OFFLINE · OPEN SOURCE</span><h1>Seed Split Tool</h1><p>Создавайте, разделяйте и восстанавливайте seed-фразы локально. Данные не покидают устройство.</p></div><div className="offline-pill"><span /> Сеть не используется</div></section>
-    <WorkflowTabs mode={mode} onChange={selectMode} />
-    <SchemeSelector mode={mode} scheme={scheme} info={schemeInfo} onChange={selectScheme} />
+    <div className="tabs main-tabs" role="tablist" aria-label="Основные инструменты">
+      <button className={mode === "generate" ? "active" : ""} onClick={() => selectMode("generate")}>Генерация</button>
+      <button className={mode === "split" ? "active" : ""} onClick={() => selectMode("split")}>Разделить seed</button>
+      <button className={mode === "recover" ? "active" : ""} onClick={() => selectMode("recover")}>Восстановить</button>
+      <button className={mode === "multisig" ? "active" : ""} onClick={() => selectMode("multisig")}>Multisig Builder</button>
+    </div>
+    {mode !== "multisig" && <SchemeSelector mode={mode} scheme={scheme} info={schemeInfo} onChange={selectScheme} />}
 
     {mode === "generate" && <GenerationWorkflow secret={secret} visible={visible} words={words} entropy={bip39Entropy} walletFingerprint={walletFingerprint} sourceLanguageLabel={sourceLanguageLabel} bip39Words={bip39Words} bip39Language={bip39Language} bip39Passphrase={bip39Passphrase} onWordsChange={setBip39Words} onLanguageChange={changeLanguage} onPassphraseChange={setBip39Passphrase} onGenerate={generateSeed} onSecretChange={updateSecret} onToggleVisible={() => setVisible((value) => !value)} onCopy={() => navigator.clipboard.writeText(secret)} onPrint={() => window.print()} onDownload={() => downloadText("bip39-seed.txt", secret)} onContinue={() => { setScheme("slip39"); setMode("split"); setStatus("Сгенерированная seed-фраза передана в разделение"); }} />}
-
     {mode === "split" && <SplitWorkflow scheme={scheme} schemeInfo={schemeInfo} secret={secret} visible={visible} words={words} entropy={bip39Entropy} bananaTitle={bananaTitle} passphrase={passphrase} total={total} threshold={threshold} busy={busy} onSecretChange={updateSecret} onToggleVisible={() => setVisible((value) => !value)} onBananaTitleChange={setBananaTitle} onPassphraseChange={setPassphrase} onTotalChange={changeTotal} onThresholdChange={setThreshold} onCreate={createShares} />}
-
     {mode === "recover" && <RecoveryWorkflow recoveryRef={recoveryRef} recoveredRef={recoveredRef} scheme={scheme} schemeInfo={schemeInfo} input={recoveryInput} partCount={recoveryShares.length} language={bip39Language} passphrase={passphrase} busy={busy} recovered={recovered} onInputChange={setRecoveryInput} onLanguageChange={setBip39Language} onPassphraseChange={setPassphrase} onRestore={() => restore()} />}
+    {mode === "multisig" && <MultisigBuilder />}
 
     {status && <div className={isErrorStatus(status) ? "status error" : "status"}>{status}</div>}
     {mode === "split" && <ShareResults resultsRef={resultsRef} shares={shares} total={total} threshold={threshold} setLabel={setLabel} verified={verified} scheme={scheme} onCopy={(share) => navigator.clipboard.writeText(share)} onDownloadShare={(share, index) => downloadText(`seed-share-${index + 1}-of-${total}.txt`, share)} onVerify={() => { setRecoveryInput(shares.slice(0, threshold).join(joiner)); setStatus(""); setMode("recover"); scrollTo(recoveryRef); }} onPrint={() => window.print()} onDownloadAll={() => downloadText(`seed-split-${scheme}.txt`, shares.join(joiner))} onClear={clearAll} />}
 
-    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.5.5 · MIT License</span></footer>
+    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.6.0-dev · MIT License</span></footer>
   </main>;
 }
