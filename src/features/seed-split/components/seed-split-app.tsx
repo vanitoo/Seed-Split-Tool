@@ -180,7 +180,7 @@ export function SeedSplitApp() {
     <WorkflowTabs mode={mode} onChange={selectMode} />
     <SchemeSelector mode={mode} scheme={scheme} info={schemeInfo} onChange={selectScheme} />
 
-    {mode === "generate" && <GenerationWorkflow secret={secret} visible={visible} words={words} entropy={bip39Entropy} walletFingerprint={walletFingerprint} sourceLanguageLabel={sourceLanguageLabel} bip39Words={bip39Words} bip39Language={bip39Language} bip39Passphrase={bip39Passphrase} onWordsChange={setBip39Words} onLanguageChange={changeLanguage} onPassphraseChange={setBip39Passphrase} onGenerate={generateSeed} onSecretChange={updateSecret} onToggleVisible={() => setVisible((value) => !value)} onCopy={() => navigator.clipboard.writeText(secret)} onDownload={() => downloadText("bip39-seed.txt", secret)} onContinue={() => { setScheme("slip39"); setMode("split"); setStatus("Сгенерированная seed-фраза передана в разделение"); }} />}
+    {mode === "generate" && <GenerationWorkflow secret={secret} visible={visible} words={words} entropy={bip39Entropy} walletFingerprint={walletFingerprint} sourceLanguageLabel={sourceLanguageLabel} bip39Words={bip39Words} bip39Language={bip39Language} bip39Passphrase={bip39Passphrase} onWordsChange={setBip39Words} onLanguageChange={changeLanguage} onPassphraseChange={setBip39Passphrase} onGenerate={generateSeed} onSecretChange={updateSecret} onToggleVisible={() => setVisible((value) => !value)} onCopy={() => navigator.clipboard.writeText(secret)} onPrint={() => window.print()} onDownload={() => downloadText("bip39-seed.txt", secret)} onContinue={() => { setScheme("slip39"); setMode("split"); setStatus("Сгенерированная seed-фраза передана в разделение"); }} />}
 
     {mode === "split" && <SplitWorkflow scheme={scheme} schemeInfo={schemeInfo} secret={secret} visible={visible} words={words} entropy={bip39Entropy} bananaTitle={bananaTitle} passphrase={passphrase} total={total} threshold={threshold} busy={busy} onSecretChange={updateSecret} onToggleVisible={() => setVisible((value) => !value)} onBananaTitleChange={setBananaTitle} onPassphraseChange={setPassphrase} onTotalChange={changeTotal} onThresholdChange={setThreshold} onCreate={createShares} />}
 
@@ -189,6 +189,6 @@ export function SeedSplitApp() {
     {status && <div className={isErrorStatus(status) ? "status error" : "status"}>{status}</div>}
     {mode === "split" && <ShareResults resultsRef={resultsRef} shares={shares} total={total} threshold={threshold} setLabel={setLabel} verified={verified} scheme={scheme} onCopy={(share) => navigator.clipboard.writeText(share)} onDownloadShare={(share, index) => downloadText(`seed-share-${index + 1}-of-${total}.txt`, share)} onVerify={() => { setRecoveryInput(shares.slice(0, threshold).join(joiner)); setStatus(""); setMode("recover"); scrollTo(recoveryRef); }} onPrint={() => window.print()} onDownloadAll={() => downloadText(`seed-split-${scheme}.txt`, shares.join(joiner))} onClear={clearAll} />}
 
-    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.5.2 · MIT License</span></footer>
+    <footer className="app-footer"><span>Seed Split Tool</span><span>v0.5.3 · MIT License</span></footer>
   </main>;
 }
