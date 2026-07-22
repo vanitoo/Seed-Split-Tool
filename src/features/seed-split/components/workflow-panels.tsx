@@ -69,7 +69,7 @@ export function GenerationWorkflow({
           <div className="section-title"><span>02</span><div><h2>Созданная seed-фраза</h2><p>Проверьте язык, количество слов и сохраните фразу безопасным способом</p></div></div>
           <div className="secret-wrap"><textarea value={secret} onChange={(event) => onSecretChange(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={onToggleVisible}>{visible ? "Скрыть" : "Показать"}</button></div>
           <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span><span>{entropy ? "BIP-39 корректна" : "Seed ещё не создана"}</span></div>
-          {secret && <div className="generation-actions"><button onClick={onCopy}>Копировать</button><button onClick={onPrint}>Печатать</button><button onClick={onDownload}>Скачать</button><button className="primary-inline" onClick={onContinue}>Перейти к разделению →</button></div>}
+          {secret && <div className="generation-actions"><button onClick={onPrint}>Печатать</button><button onClick={onDownload}>Скачать</button><button onClick={onCopy}>Копировать</button><button className="primary-inline" onClick={onContinue}>Перейти к разделению →</button></div>}
         </div>
         <aside className="panel algorithm-panel"><div className="algorithm-symbol">◇</div><h3>Генерация BIP-39</h3><ul className="check-list"><li>Криптографически случайная entropy</li><li>Официальные словари BIP-39</li><li>Работает полностью локально</li></ul><div className="flow-diagram"><span>Entropy</span><b>↓</b><span>BIP-39 слова</span><b>↓</b><span>Wallet</span></div></aside>
       </section>
@@ -216,5 +216,5 @@ export function WorkflowTabs({ mode, onChange }: { mode: WorkflowMode; onChange:
 
 export function SchemeSelector({ mode, scheme, info, onChange }: { mode: WorkflowMode; scheme: SharingScheme; info: SchemeInfo; onChange: (scheme: SharingScheme) => void }) {
   if (mode === "generate") return null;
-  return <section className="panel scheme-panel"><label htmlFor="scheme-select"><strong>{mode === "split" ? "Схема разделения" : "Формат частей"}</strong></label><select id="scheme-select" value={scheme} onChange={(event) => onChange(event.target.value as SharingScheme)}><option value="slip39">SLIP-39 · готово</option><option value="banana">Banana Split · готово</option><option value="generic">Generic SST1 · готово</option></select><p>{info.description}</p></section>;
+  return <section className="panel scheme-panel"><label htmlFor="scheme-select"><strong>{mode === "split" ? "Схема разделения" : "Формат частей"}</strong></label><select id="scheme-select" value={scheme} onChange={(event) => onChange(event.target.value as SharingScheme)}><option value="slip39">SLIP-39</option><option value="banana">Banana Split</option><option value="generic">Generic SST1</option></select><p>{info.description}</p></section>;
 }
