@@ -1,19 +1,19 @@
 # Version
 
-Current release: **v0.5.4**
+Current release: **v0.5.5**
 
 Release date: **2026-07-22**
 
 ## Release summary
 
-Version 0.5.4 removes the unexpected automatic page movement after recovery.
+Version 0.5.5 refines navigation and action labels across the main workflows.
 
 The release includes:
 
-- no automatic scrolling after clicking **Restore secret**;
-- the recovered secret remains directly below the restore controls;
-- the current input position and focus are preserved;
-- unchanged recovery and cryptographic behavior.
+- no automatic scrolling when the **Recover** tab is selected;
+- simplified scheme selector entries without the redundant “ready” suffix;
+- generation actions ordered as Print, Download, and Copy;
+- unchanged clipboard behavior and cryptographic operations.
 
 ## Stability
 
