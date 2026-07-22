@@ -7,6 +7,7 @@ import {
   type Bip39WordCount,
 } from "../lib/bip39-tools";
 import type { SchemeInfo, SharingScheme, WorkflowMode } from "../model";
+import { SeedPrintCard } from "./seed-print-card";
 
 type GenerationProps = {
   secret: string;
@@ -25,6 +26,7 @@ type GenerationProps = {
   onSecretChange: (value: string) => void;
   onToggleVisible: () => void;
   onCopy: () => void;
+  onPrint: () => void;
   onDownload: () => void;
   onContinue: () => void;
 };
@@ -46,29 +48,33 @@ export function GenerationWorkflow({
   onSecretChange,
   onToggleVisible,
   onCopy,
+  onPrint,
   onDownload,
   onContinue,
 }: GenerationProps) {
   return (
-    <section className="workspace generator-workspace">
-      <div className="panel input-panel">
-        <section className="seed-generator standalone-generator">
-          <div className="section-title"><span>01</span><div><h2>Генератор BIP-39</h2><p>Создаёт новую seed-фразу локально через Web Crypto</p></div></div>
-          <div className="generator-controls">
-            <label>Количество слов<select value={bip39Words} onChange={(event) => onWordsChange(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
-            <label>Официальный словарь<select value={bip39Language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
-            <button type="button" onClick={onGenerate}>Сгенерировать seed</button>
-          </div>
-          <label className="bip39-passphrase"><span className="label-with-help">BIP-39 Passphrase <span className="help-tip" tabIndex={0} aria-label="Подсказка о BIP-39 Passphrase">ⓘ<span className="help-bubble">Используется как дополнительный пароль.<br />Не входит в seed-фразу.<br />Потеря пароля лишает доступа к созданному кошельку.</span></span></span><input type="password" value={bip39Passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Храните отдельно" autoComplete="new-password" /></label>
-          <div className="entropy-proof"><div><span>Словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{compactFingerprint(entropy)}</code></div><div><span className="label-with-help">Wallet fingerprint <span className="help-tip" tabIndex={0}>ⓘ<span className="help-bubble">Короткий отпечаток производного wallet seed. Помогает увидеть изменение языка или Passphrase.</span></span></span><code>{walletFingerprint}</code></div></div>
-        </section>
-        <div className="section-title"><span>02</span><div><h2>Созданная seed-фраза</h2><p>Проверьте язык, количество слов и сохраните фразу безопасным способом</p></div></div>
-        <div className="secret-wrap"><textarea value={secret} onChange={(event) => onSecretChange(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={onToggleVisible}>{visible ? "Скрыть" : "Показать"}</button></div>
-        <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span><span>{entropy ? "BIP-39 корректна" : "Seed ещё не создана"}</span></div>
-        {secret && <div className="generation-actions"><button onClick={onCopy}>Копировать</button><button onClick={onDownload}>Скачать</button><button className="primary-inline" onClick={onContinue}>Перейти к разделению →</button></div>}
-      </div>
-      <aside className="panel algorithm-panel"><div className="algorithm-symbol">◇</div><h3>Генерация BIP-39</h3><ul className="check-list"><li>Криптографически случайная entropy</li><li>Официальные словари BIP-39</li><li>Работает полностью локально</li></ul><div className="flow-diagram"><span>Entropy</span><b>↓</b><span>BIP-39 слова</span><b>↓</b><span>Wallet</span></div></aside>
-    </section>
+    <>
+      <section className="workspace generator-workspace">
+        <div className="panel input-panel">
+          <section className="seed-generator standalone-generator">
+            <div className="section-title"><span>01</span><div><h2>Генератор BIP-39</h2><p>Создаёт новую seed-фразу локально через Web Crypto</p></div></div>
+            <div className="generator-controls">
+              <label>Количество слов<select value={bip39Words} onChange={(event) => onWordsChange(Number(event.target.value) as Bip39WordCount)}>{BIP39_WORD_COUNTS.map((count) => <option key={count} value={count}>{count} слов</option>)}</select></label>
+              <label>Официальный словарь<select value={bip39Language} onChange={(event) => onLanguageChange(event.target.value as Bip39Language)}>{BIP39_LANGUAGES.map((language) => <option key={language.value} value={language.value}>{language.label}</option>)}</select></label>
+              <button type="button" onClick={onGenerate}>Сгенерировать seed</button>
+            </div>
+            <label className="bip39-passphrase"><span className="label-with-help">BIP-39 Passphrase <span className="help-tip" tabIndex={0} aria-label="Подсказка о BIP-39 Passphrase">ⓘ<span className="help-bubble">Используется как дополнительный пароль.<br />Не входит в seed-фразу.<br />Потеря пароля лишает доступа к созданному кошельку.</span></span></span><input type="password" value={bip39Passphrase} onChange={(event) => onPassphraseChange(event.target.value)} placeholder="Храните отдельно" autoComplete="new-password" /></label>
+            <div className="entropy-proof"><div><span>Словарь</span><strong>{sourceLanguageLabel}</strong></div><div><span>Entropy</span><code>{compactFingerprint(entropy)}</code></div><div><span className="label-with-help">Wallet fingerprint <span className="help-tip" tabIndex={0}>ⓘ<span className="help-bubble">Короткий отпечаток производного wallet seed. Помогает увидеть изменение языка или Passphrase.</span></span></span><code>{walletFingerprint}</code></div></div>
+          </section>
+          <div className="section-title"><span>02</span><div><h2>Созданная seed-фраза</h2><p>Проверьте язык, количество слов и сохраните фразу безопасным способом</p></div></div>
+          <div className="secret-wrap"><textarea value={secret} onChange={(event) => onSecretChange(event.target.value)} className={visible ? "" : "masked"} placeholder="Нажмите «Сгенерировать seed»" spellCheck={false} autoComplete="off" /><button className="ghost" onClick={onToggleVisible}>{visible ? "Скрыть" : "Показать"}</button></div>
+          <div className="meta"><span>{secret.length} символов</span><span>{words} слов</span><span>{entropy ? "BIP-39 корректна" : "Seed ещё не создана"}</span></div>
+          {secret && <div className="generation-actions"><button onClick={onCopy}>Копировать</button><button onClick={onPrint}>Печатать</button><button onClick={onDownload}>Скачать</button><button className="primary-inline" onClick={onContinue}>Перейти к разделению →</button></div>}
+        </div>
+        <aside className="panel algorithm-panel"><div className="algorithm-symbol">◇</div><h3>Генерация BIP-39</h3><ul className="check-list"><li>Криптографически случайная entropy</li><li>Официальные словари BIP-39</li><li>Работает полностью локально</li></ul><div className="flow-diagram"><span>Entropy</span><b>↓</b><span>BIP-39 слова</span><b>↓</b><span>Wallet</span></div></aside>
+      </section>
+      {secret && <SeedPrintCard secret={secret} />}
+    </>
   );
 }
 
