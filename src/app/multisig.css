@@ -1,0 +1,112 @@
+.multisig-workspace { margin-top: 1.25rem; }
+
+.multisig-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.multisig-policy-grid label,
+.signer-card label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.multisig-policy-grid select,
+.signer-card input,
+.signer-card textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 0.75rem 0.85rem;
+  background: #06110e;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.multisig-policy-grid select:focus,
+.signer-card input:focus,
+.signer-card textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108, 243, 177, 0.12);
+}
+
+.signer-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.signer-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(7, 21, 16, 0.72);
+}
+
+.signer-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.signer-heading strong { color: var(--accent); font-size: 1.05rem; }
+.signer-heading span { color: var(--muted); font-size: 0.82rem; }
+
+.signer-meta-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.65fr) minmax(200px, 1fr);
+  gap: 0.8rem;
+}
+
+.signer-card textarea {
+  min-height: 86px;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  word-break: break-all;
+}
+
+.field-error {
+  color: #ff9d9d;
+  line-height: 1.4;
+}
+
+.descriptor-output pre {
+  min-height: 110px;
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #477466;
+  border-radius: 13px;
+  background: #04100c;
+  color: #d8fff0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.55;
+}
+
+.descriptor-output button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.multisig-warning {
+  padding: 0.95rem;
+  border: 1px solid #7a6635;
+  border-radius: 13px;
+  background: rgba(79, 61, 19, 0.22);
+}
+
+.multisig-warning strong { color: #ffe09b; }
+.multisig-warning p { margin: 0.5rem 0 0; color: var(--muted); line-height: 1.55; }
+
+@media (max-width: 850px) {
+  .multisig-policy-grid { grid-template-columns: 1fr; }
+  .signer-meta-grid { grid-template-columns: 1fr; }
+}
