@@ -2,6 +2,13 @@
 
 All notable project changes are documented in this file.
 
+## 0.5.4 - 2026-07-22
+
+### Fixed
+
+- Removed the automatic scroll to the recovered-secret block after clicking **Restore secret**.
+- Preserved the user's current page position and input focus while displaying the recovery result below the controls.
+
 ## 0.5.3 - 2026-07-22
 
 ### Added
